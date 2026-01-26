@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 import AddRecipeForm from './components/AddRecipeForm';
 import UpdateRecipeForm from './components/UpdateRecipeForm';
 import Recipes from './components/recipes';
@@ -9,6 +8,7 @@ import { fetchRecipes, deleteRecipe as deleteRecipeAPI } from './API/recipe-mana
 import { fetchCategories } from './API/category-manager';
 import RecipeCounter from './components/RecipeCounter';
 import EditCategoryForm from './components/EditCategoryForm';
+import Header from './components/Header';
 
 export default function RecipesApp({ onLogout }) {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -113,9 +113,10 @@ export default function RecipesApp({ onLogout }) {
   return (
     <>
       <div>
-        <TopBar setShowAddForm={setShowAddForm} onSearchChange={handleSearchChange} onCategoryAdded={handleCategoryAdded} onLogout={onLogout} />
+        <Header />
+        {/* <TopBar setShowAddForm={setShowAddForm} onSearchChange={handleSearchChange} onCategoryAdded={handleCategoryAdded} onLogout={onLogout} />
         {showAddForm && !editingRecipe && <AddRecipeForm setShowAddForm={setShowAddForm} fetchRecipes={fetchRecipes} onRecipesUpdated={refreshRecipes} />}
-        {showUpdateForm && editingRecipe && <UpdateRecipeForm setShowUpdateForm={setShowUpdateForm} fetchRecipes={fetchRecipes} editingRecipe={editingRecipe} setEditingRecipe={setEditingRecipe} onRecipesUpdated={refreshRecipes} />}
+        {showUpdateForm && editingRecipe && <UpdateRecipeForm setShowUpdateForm={setShowUpdateForm} fetchRecipes={fetchRecipes} editingRecipe={editingRecipe} setEditingRecipe={setEditingRecipe} onRecipesUpdated={refreshRecipes} />} */}
       </div>
       <div className="categories-display container mb-4" style={{ marginLeft: '20%', marginTop: '50px' }}>
         <CategoriesDisplay categories={categories} onCategoriesChanged={onCategoriesChanged} startEditingCategory={startEditingCategory} isEditingCategory={isEditingCategory} handleCategoryFilterChange={handleCategoryFilterChange} />

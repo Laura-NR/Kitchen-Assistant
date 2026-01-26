@@ -1,0 +1,70 @@
+// Custom.scss
+// Option A: Include all of Bootstrap
+
+// Include any default variable overrides here (though functions won't be available)
+
+
+// Required
+@import "../../node_modules/bootstrap/scss/functions";
+$primary: #062305;
+$secondary: #EBCC5B;
+$info: #F0E3B5;
+$success: #74E660;
+$dark: #091004;
+$danger: #6d0707;
+$warning: #ff8707;
+$light: #b7d7f7;
+
+
+
+// Required
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/variables-dark";
+
+$theme-colors: (
+        "primary": $primary,
+        "secondary": $secondary,
+        "info": $info,
+        "success": $success,
+        "dark": $dark,
+        "danger": $danger,
+        "warning": $warning,
+        "light": $light
+
+);
+@import "../../node_modules/bootstrap/scss/maps";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/root";
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
+.deepgreen {
+  color: $primary;
+}
+
+.lightergreen {
+    color: $success;
+}
+
+.myyelloww {
+    color: $secondary;
+}
+
+.lighteryelloww {
+    color: $info;
+}
+
+.greenblack {
+    color: $dark;
+}
+
+.red {
+    color: $danger;
+}
+
+.orange {
+    color: $warning;
+}
+
+.lightblue {
+    color: $light;
+}

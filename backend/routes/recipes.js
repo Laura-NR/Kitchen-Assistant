@@ -1,12 +1,19 @@
 import multer from 'multer';
 import { app, upload } from '../app.js';
 import mysql from 'mysql2/promise';
+import { Database } from '../config/database.js';
+import { RecipeDAO } from '../daos/RecipeDAO.js';
+import { RecipeService } from '../services/RecipeService.js';
 import { RecipeController } from '../controllers/recipe-controller.js';
 import { Router } from 'express';
 import verifyToken from '../middleware/auth-middleware.js';
 var router = Router();
 
-const recipeController = new RecipeController();
+// Initialize dependencies
+const database = new Database();
+const recipeDAO = new RecipeDAO(database);
+const recipeService = new RecipeService(recipeDAO);
+const recipeController = new RecipeController(recipeService);
 
 /* GET notes listing. */
 const recipesRouter = () => {
