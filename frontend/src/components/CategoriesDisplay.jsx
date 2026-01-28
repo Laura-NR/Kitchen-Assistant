@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../CategoriesDisplay.css';
-import { updateCategory, deleteCategory } from '../API/category-manager';
+import { updateCategory, deleteCategory } from '../API/CategoryManager';
 
 function CategoriesDisplay({ categories, onCategoriesChanged, startEditingCategory, handleCategoryFilterChange }) {
 

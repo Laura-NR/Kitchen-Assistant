@@ -1,0 +1,60 @@
+generator client {
+  provider      = "prisma-client-js"
+  engineType    = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  password   String
+  categories Category[]
+  recipes    Recipe[]
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String
+  user    User     @relation(fields: [userId], references: [id])
+  userId  Int
+  recipes Recipe[]
+}
+
+model Recipe {
+  id           Int                @id @default(autoincrement())
+  title        String
+  instructions String?
+  imagePath    String?
+  sourceLink   String?
+  createdAt    DateTime           @default(now())
+  user         User               @relation(fields: [userId], references: [id])
+  userId       Int
+  category     Category?          @relation(fields: [categoryId], references: [id])
+  categoryId   Int?
+  ingredients  RecipeIngredient[]
+}
+
+model Ingredient {
+  id              Int                @id @default(autoincrement())
+  name            String             @unique
+  caloriesPer100g Float?
+  protein         Float?
+  carbs           Float?
+  fat             Float?
+  recipes         RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  recipeId     Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId Int
+  quantity     Float?     // e.g., 200
+  unit         String?    // e.g., "grams"
+
+  @@id([recipeId, ingredientId])
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import { loginUser } from "../API/user-manager";
+import { loginUser } from "../API/UserManager";
 
 export default function Authenticate({
   onAuthenticatedChanged,

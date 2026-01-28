@@ -11,6 +11,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --gold: #d4af37;
+  --dark-green: #1a2f1a; 
+  --parchment: #fcfaf2;
 }
 
 a {
@@ -27,6 +31,39 @@ body {
   display: flex;
   place-items: center;
   height: 100vh;
+  background-color: var(--parchment);
+  background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png"); /* Subtle texture */
+  color: var(--dark-green);
+  font-family: 'Georgia', serif;
+}
+
+.nav-link-gold {
+  text-decoration: none;
+  color: var(--gold) !important;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: 0.3s;
+}
+
+.nav-link-gold:hover {
+  color: #fff !important;
+  text-shadow: 0 0 5px var(--gold);
+}
+
+.logout-text-btn {
+  background: none;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  transition: 0.3s;
+}
+
+.logout-text-btn:hover {
+  background: var(--gold);
+  color: white;
 }
 
 h1 {

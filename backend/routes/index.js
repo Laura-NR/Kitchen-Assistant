@@ -1,9 +1,12 @@
-import { Router } from 'express';
-var router = Router();
+const express = require('express');
+const recipesRouter = require('./recipes.js');
+const usersRouter = require('./users.js');
+const categoryRouter = require('./categories.js');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+const router = express.Router();
 
-export default router;
+router.use('/recipes', recipesRouter);
+router.use('/auth', usersRouter);
+router.use('/categories', categoryRouter);
+
+module.exports = router;

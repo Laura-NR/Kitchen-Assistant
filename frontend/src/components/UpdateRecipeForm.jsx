@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { updateRecipe } from '../API/recipe-manager';
-import { fetchCategories } from '../API/category-manager';
+import { updateRecipe } from '../API/RecipeManager';
+import { fetchCategories } from '../API/CategoryManager';
 
 export default function UpdateRecipeForm({ setShowUpdateForm, editingRecipe, onRecipesUpdated, fetchRecipes }) {
     const [formData, setFormData] = useState(editingRecipe || {});

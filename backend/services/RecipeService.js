@@ -1,41 +1,51 @@
-export class RecipeService {
-    constructor(recipeDAO) {
-      this.recipeDAO = recipeDAO;
-    }
+const prisma = require('../config/prisma.js');
 
+class RecipeService {
     async createRecipe(recipeData, userId) {
-        const fullRecipeData = {
-          ...recipeData,
-          date: new Date(),
-          user: userId
-        };
-        
-        return this.recipeDAO.create(fullRecipeData);
-      }
-    
-    async updateRecipe(id, recipeData) {
-    return this.recipeDAO.update(id, recipeData);
-    }
-  
-    async getAllRecipes(userId, category) {
-      const results = await this.recipeDAO.findAll(userId, category);
-      return results.map(recipe => this._transformImagePath(recipe));
-    }
-  
-    _transformImagePath(recipe) {
-      return {
-        ...recipe,
-        image: recipe.image ? recipe.image.replace(/^.*[\\\/]/, '/assets/') : null
-      };
+        const { title, instructions, categoryId, imagePath, sourceLink, ingredients } = recipeData;
+
+        const parsedIngredients = typeof ingredients === 'string' ? JSON.parse(ingredients) : ingredients;
+
+        return await prisma.recipe.create({
+            data: {
+                title,
+                instructions,
+                imagePath,
+                sourceLink,
+                userId: userId,
+                categoryId: categoryId ? parseInt(categoryId) : null,
+                ingredients: {
+                    create: parsedIngredients?.map(ing => ({
+                        quantity: parseFloat(ing.quantity),
+                        unit: ing.unit,
+                        ingredient: {
+                            connectOrCreate: {
+                                where: { name: ing.name },
+                                create: { name: ing.name }
+                            }
+                        }
+                    }))
+                }
+            },
+            include: { ingredients: { include: { ingredient: true } } }
+        });
     }
 
-    async deleteRecipe(recipeId) {
-        const affectedRows = await this.recipeDAO.delete(recipeId);
-        
-        if (affectedRows === 0) {
-          throw new Error('Recipe not found');
-        }
-        
-        return { success: true };
-      }
-  }
+    async getAllRecipes(userId, categoryId) {
+        return await prisma.recipe.findMany({
+            where: {
+                userId,
+                ...(categoryId && { categoryId: parseInt(categoryId) })
+            },
+            include: { category: true, ingredients: { include: { ingredient: true } } }
+        });
+    }
+
+    async deleteRecipe(id, userId) {
+        return await prisma.recipe.delete({
+            where: { id: parseInt(id), userId }
+        });
+    }
+}
+
+module.exports = { RecipeService };

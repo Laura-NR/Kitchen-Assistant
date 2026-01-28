@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerUser } from "../API/user-manager";
+import { registerUser } from "../API/UserManager";
 
 export default function Register({ onRegistrationSuccess, switchToLogin }) {
   const [formData, setFormData] = useState({

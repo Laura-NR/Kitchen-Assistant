@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import NewRecipe from './NewRecipe';
 import '../AddRecipeForm.css';
-import { fetchCategories } from '../API/category-manager';
-import { createRecipe } from '../API/recipe-manager';
+import { fetchCategories } from '../API/CategoryManager';
+import { createRecipe } from '../API/RecipeManager';
 
 export default function AddRecipeForm({ setShowAddForm, fetchRecipes, onRecipesUpdated }) {
     const [formData, setFormData] = useState({

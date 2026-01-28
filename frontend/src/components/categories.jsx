@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createCategory } from '../API/category-manager';
+import { createCategory } from '../API/CategoryManager';
 
 export default function Categories({ onCategoryAdded }) {
     const [categoryName, setCategoryName] = useState('');

@@ -1,7 +1,9 @@
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 export const fetchCategories = async () => {
     const jwtToken = localStorage.getItem('jwt'); 
     try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/categories`, {
+        const response = await fetch(`${API_URL}/api/categories`, {
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
                 'Content-Type': 'application/json',
@@ -20,7 +22,7 @@ export const fetchCategories = async () => {
 // Function to create a category
 export const createCategory = async (categoryName) => {
     const jwtToken = localStorage.getItem('jwt');
-    const url = `${import.meta.env.VITE_BACKEND_URL}/categories`;
+    const url = `${API_URL}/api/categories`;
 
     try {
         const response = await fetch(url, {
@@ -45,7 +47,7 @@ export const createCategory = async (categoryName) => {
 
 export const updateCategory = async (categoryId, categoryName) => {
     const jwtToken = localStorage.getItem('jwt');
-    const url = `${import.meta.env.VITE_BACKEND_URL}/categories/${categoryId}`;
+    const url = `${API_URL}/api/categories/${categoryId}`;
 
     try {
         const response = await fetch(url, {
@@ -68,29 +70,21 @@ export const updateCategory = async (categoryId, categoryName) => {
     }
 };
 
-export const deleteCategory = async (categoryId) => {
-    const jwtToken = localStorage.getItem('jwt');
-    const url = `${import.meta.env.VITE_BACKEND_URL}/categories/${categoryId}`;
+export const deleteCategory = async (categoryId, token) => {
+    const url = `${API_URL}/api/categories/${categoryId}`;
 
     try {
         const response = await fetch(url, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${jwtToken}`,
-            },
+            headers: { 'Authorization': `Bearer ${token}` },
         });
 
         if (!response.ok) {
-            let message;
-            try {
-                const data = await response.json();
-                message = data.message;
-            } catch (jsonError) {
-                message = await response.text();
-            }
-            throw new Error('Failed to delete category: ' + message);
+            const errorText = await response.text(); 
+            throw new Error(`Deletion failed: ${errorText}`);
         }
-        return await response.json(); 
+
+        return response.status === 204 ? true : await response.json(); 
     } catch (error) {
         console.error('Error deleting category:', error);
         throw error;

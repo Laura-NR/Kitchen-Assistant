@@ -4,11 +4,12 @@ import UpdateRecipeForm from './components/UpdateRecipeForm';
 import Recipes from './components/recipes';
 import TopBar from './components/TopBar';
 import CategoriesDisplay from './components/CategoriesDisplay';
-import { fetchRecipes, deleteRecipe as deleteRecipeAPI } from './API/recipe-manager';
-import { fetchCategories } from './API/category-manager';
+import { fetchRecipes, deleteRecipe as deleteRecipeAPI } from './API/RecipeManager';
+import { fetchCategories } from './API/CategoryManager';
 import RecipeCounter from './components/RecipeCounter';
 import EditCategoryForm from './components/EditCategoryForm';
 import Header from './components/Header';
+import WelcomeCard from './components/WelcomeCard';
 
 export default function RecipesApp({ onLogout }) {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -112,23 +113,56 @@ export default function RecipesApp({ onLogout }) {
 
   return (
     <>
-      <div>
-        <Header />
-        {/* <TopBar setShowAddForm={setShowAddForm} onSearchChange={handleSearchChange} onCategoryAdded={handleCategoryAdded} onLogout={onLogout} />
-        {showAddForm && !editingRecipe && <AddRecipeForm setShowAddForm={setShowAddForm} fetchRecipes={fetchRecipes} onRecipesUpdated={refreshRecipes} />}
-        {showUpdateForm && editingRecipe && <UpdateRecipeForm setShowUpdateForm={setShowUpdateForm} fetchRecipes={fetchRecipes} editingRecipe={editingRecipe} setEditingRecipe={setEditingRecipe} onRecipesUpdated={refreshRecipes} />} */}
+      <Header />
+      
+      {/* Search and Add Logic - Only show if we have recipes or if the user wants to add one */}
+      <div className="container mt-4">
+        <TopBar 
+          setShowAddForm={setShowAddForm} 
+          onSearchChange={handleSearchChange} 
+          onCategoryAdded={handleCategoryAdded} 
+          onLogout={onLogout} 
+        />
+        
+        {showAddForm && !editingRecipe && (
+          <AddRecipeForm setShowAddForm={setShowAddForm} fetchRecipes={fetchRecipes} onRecipesUpdated={refreshRecipes} />
+        )}
+        
+        {showUpdateForm && editingRecipe && (
+          <UpdateRecipeForm setShowUpdateForm={setShowUpdateForm} fetchRecipes={fetchRecipes} editingRecipe={editingRecipe} setEditingRecipe={setEditingRecipe} onRecipesUpdated={refreshRecipes} />
+        )}
       </div>
-      <div className="categories-display container mb-4" style={{ marginLeft: '20%', marginTop: '50px' }}>
-        <CategoriesDisplay categories={categories} onCategoriesChanged={onCategoriesChanged} startEditingCategory={startEditingCategory} isEditingCategory={isEditingCategory} handleCategoryFilterChange={handleCategoryFilterChange} />
-        {isEditingCategory && <EditCategoryForm category={categoryToEdit} onClose={() => setIsEditingCategory(false)} onCategoriesChanged={onCategoriesChanged} />}
-      </div>
-      <div style={{ marginLeft: '20%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={toggleSortOrder} className="btn btn-primary mb-3">&#8645;</button>
-        <RecipeCounter  recipeCount={displayedRecipeCount} />
-      </div>
-      <div className="recipes-grid">
-        <Recipes recipes={sortedFilteredRecipes} onDelete={deleteRecipe} setEditingRecipe={setEditingRecipe} setShowUpdateForm={setShowUpdateForm} />
-      </div>
+
+      {/* Conditional Rendering: WelcomeCard vs. Content */}
+      {recipes.length === 0 ? (
+        <WelcomeCard onAddClick={() => setShowAddForm(true)} />
+      ) : (
+        <>
+          <div className="categories-display container mb-4" style={{ marginLeft: '20%', marginTop: '50px' }}>
+            <CategoriesDisplay 
+              categories={categories} 
+              onCategoriesChanged={onCategoriesChanged} 
+              startEditingCategory={startEditingCategory} 
+              isEditingCategory={isEditingCategory} 
+              handleCategoryFilterChange={handleCategoryFilterChange} 
+            />
+            {isEditingCategory && (
+              <EditCategoryForm category={categoryToEdit} onClose={() => setIsEditingCategory(false)} onCategoriesChanged={onCategoriesChanged} />
+            )}
+          </div>
+
+          <div style={{ marginLeft: '20%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: '10%' }}>
+            <button onClick={toggleSortOrder} className="btn btn-primary mb-3">
+              {isSortedAsc ? "Sorted: Oldest" : "Sorted: Newest"} &#8645;
+            </button>
+            <RecipeCounter recipeCount={displayedRecipeCount} />
+          </div>
+
+          <div className="recipes-grid">
+            <Recipes recipes={sortedFilteredRecipes} onDelete={deleteRecipe} setEditingRecipe={setEditingRecipe} setShowUpdateForm={setShowUpdateForm} />
+          </div>
+        </>
+      )}
     </>
   );
 }

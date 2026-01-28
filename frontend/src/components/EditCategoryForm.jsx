@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { updateCategory } from '../API/category-manager';
+import { updateCategory } from '../API/CategoryManager';
 import '../EditCategoryForm.css'
 
 export default function EditCategoryForm({ category, onClose, onCategoriesChanged }) {
