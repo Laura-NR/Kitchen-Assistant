@@ -1,26 +1,26 @@
-import mysql from 'mysql2/promise';
+import pg from 'pg';
 import 'dotenv/config';
+
+const { Pool } = pg;
 
 export class Database {
   constructor() {
-    this.pool = mysql.createPool({
+    this.pool = new Pool({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       database: process.env.DB_NAME,
       password: process.env.DB_PASSWORD,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0
+      port: process.env.DB_PORT || 5432,
     });
   }
 
-  async query(sql, params) {
-    const connection = await this.pool.getConnection();
+  async query(text, params) {
+    const client = await this.pool.connect();
     try {
-      const [results] = await connection.query(sql, params);
-      return results;
+      const res = await client.query(text, params);
+      return res.rows; // pg returns result object with rows in .rows
     } finally {
-      connection.release();
+      client.release();
     }
   }
 }

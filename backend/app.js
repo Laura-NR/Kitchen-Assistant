@@ -11,6 +11,9 @@ import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
 import recipesRouter from './routes/recipes.js';
 import categoriesRouter from "./routes/categories.js";
+import kitchenRouter from './routes/kitchen.js';
+import gardenRouter from './routes/garden.js';
+import zeroWasteRouter from './routes/zerowaste.js';
 
 // Create Express app
 const app = express();
@@ -20,19 +23,7 @@ app.use(cors());
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Set up multer storage for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, 'public', 'assets'));
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10000000 },
-});
+import { upload } from './config/multer.js';
 
 // Multer middleware to parse form data
 app.use(express.json({ limit: '10mb' }));
@@ -45,6 +36,10 @@ app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 app.use('/recipes', recipesRouter());
 app.use('/categories', categoriesRouter());
 app.use('/users', usersRouter());
+app.use('/api/kitchen', kitchenRouter());
+app.use('/api/garden', gardenRouter());
+app.use('/api/zerowaste', zeroWasteRouter());
+
 app.use('/', (req, res) => res.send('la bienvenue!'));
 
 // error handler
@@ -63,4 +58,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-export { app, upload };
+export { app };
