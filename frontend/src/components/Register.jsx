@@ -15,14 +15,16 @@ export default function Register({ onRegistrationSuccess, switchToLogin }) {
     }));
   };
 
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
       const data = await registerUser(formData);
-      alert(data.message);
-      onRegistrationSuccess();
+      onRegistrationSuccess(data.message || "Registration successful! You can now login.");
     } catch (error) {
-      alert(error.message);
+      setError(error.message);
     }
   };
 
@@ -35,6 +37,7 @@ export default function Register({ onRegistrationSuccess, switchToLogin }) {
       >
         <fieldset className="w-75 m-auto d-flex flex-column justify-content-center align-items-center">
           <legend>Register</legend>
+          {error && <div className="alert alert-danger w-100 p-2 text-center" role="alert">{error}</div>}
           <div className="mb-3 w-100">
             <label htmlFor="name" className="form-label">
               Username

@@ -1,26 +1,16 @@
-import React from 'react'; 
+import React from 'react';
 import '../TopBar.css';
-import SearchBar from './SearchBar'; 
+import SearchBar from './SearchBar';
 import NewRecipe from './NewRecipe';
 import Categories from './categories';
-import LogoutButton from './LogoutButton';
 
-function TopBar({ setShowAddForm, onSearchChange, onCategoryAdded, onLogout }) {
+function TopBar({ onSearchChange }) {
     return (
         <div className="top-bar">
             <div className="container-fluid">
-                <div className="d-flex justify-content-between">
-                    <div className="d-flex align-items-center">
-                        <div className="me-5">
-                            <NewRecipe handleButtonClick={() => setShowAddForm(true)} />
-                        </div>
-                        <Categories onCategoryAdded={onCategoryAdded} />
-                    </div>
-                    <div className="d-flex align-items-center">
-                        <div className="me-3">
-                            <SearchBar onSearchChange={onSearchChange} />
-                        </div>
-                        <LogoutButton onLogout={onLogout} />
+                <div className="d-flex justify-content-end w-100">
+                    <div className="w-50">
+                        <SearchBar onSearchChange={onSearchChange} />
                     </div>
                 </div>
             </div>

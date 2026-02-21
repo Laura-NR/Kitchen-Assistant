@@ -2,11 +2,16 @@ import { useState, useEffect } from "react";
 import Authenticate from "./components/Authenticate";
 import RecipesApp from "./RecipesApp";
 import Register from "./components/Register";
+import MainLayout from "./MainLayout";
+import GardenModule from "./GardenModule";
+import ZeroWasteModule from "./ZeroWasteModule";
+import SettingsModule from "./SettingsModule";
 
 
 export default function App() {
     const [authenticated, setAuthenticated] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
+    const [currentModule, setCurrentModule] = useState('kitchen');
 
     useEffect(() => {
         const jwt = localStorage.getItem('jwt');
@@ -33,14 +38,36 @@ export default function App() {
     const switchToRegister = () => setShowRegister(true);
     const switchToLogin = () => setShowRegister(false);
 
+    const [loginMessage, setLoginMessage] = useState('');
+    const [loginMessageType, setLoginMessageType] = useState(''); // 'success' or 'error'
+
     // Handler for successful registration
-    const onRegistrationSuccess = () => {
+    const onRegistrationSuccess = (message) => {
+        setLoginMessage(message);
+        setLoginMessageType('success');
         setShowRegister(false); // Go back to the login form
-        alert("Registration successful. Please login.");
     };
 
+    const [activeTab, setActiveTab] = useState('recipes');
+    const [showAddForm, setShowAddForm] = useState(false);
+
     if (authenticated) {
-        return <RecipesApp onLogout={handleLogout} />;
+        return (
+            <MainLayout
+                currentModule={currentModule}
+                onModuleChange={setCurrentModule}
+                onLogout={handleLogout}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                showAddForm={showAddForm}
+                setShowAddForm={setShowAddForm}
+            >
+                {currentModule === 'kitchen' && <RecipesApp activeTab={activeTab} setActiveTab={setActiveTab} showAddForm={showAddForm} setShowAddForm={setShowAddForm} />}
+                {currentModule === 'garden' && <GardenModule />}
+                {currentModule === 'zerowaste' && <ZeroWasteModule />}
+                {currentModule === 'settings' && <SettingsModule />}
+            </MainLayout>
+        );
     } else {
         return (
             <>
@@ -48,7 +75,7 @@ export default function App() {
                     <Register onRegistrationSuccess={onRegistrationSuccess} switchToLogin={switchToLogin} />
                 ) : (
                     <>
-                        <Authenticate onAuthenticatedChanged={onAuthenticatedChangedHandler} switchToRegister={switchToRegister} />
+                        <Authenticate onAuthenticatedChanged={onAuthenticatedChangedHandler} switchToRegister={switchToRegister} loginMessage={loginMessage} loginMessageType={loginMessageType} />
                     </>
                 )}
             </>

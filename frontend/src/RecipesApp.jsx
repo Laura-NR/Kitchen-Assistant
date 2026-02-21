@@ -8,51 +8,18 @@ import { fetchRecipes, deleteRecipe as deleteRecipeAPI } from './API/recipe-mana
 import { fetchCategories } from './API/category-manager';
 import RecipeCounter from './components/RecipeCounter';
 import EditCategoryForm from './components/EditCategoryForm';
-import Header from './components/Header';
+import MenuPlanner from './components/MenuPlanner';
+import ShoppingList from './components/ShoppingList';
 
-export default function RecipesApp({ onLogout }) {
-  const [showAddForm, setShowAddForm] = useState(false);
+export default function RecipesApp({ activeTab, setActiveTab, showAddForm, setShowAddForm }) {
+  // const [showAddForm, setShowAddForm] = useState(false); // LIFTED TO APP.JSX
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [recipes, setRecipes] = useState([]); // State to hold recipes data
   const [searchTerm, setSearchTerm] = useState('');
   const [editingRecipe, setEditingRecipe] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [isEditingCategory, setIsEditingCategory] = useState(false);
-  const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [isSortedAsc, setIsSortedAsc] = useState(true); // true for ascending, false for descending
-  const [selectedCategory, setSelectedCategory] = useState('All');
 
-  useEffect(() => {
-    const initCategories = async () => {
-      try {
-        const categoriesData = await fetchCategories();
-        setCategories(categoriesData);
-      } catch (error) {
-        console.error('Error initializing categories:', error);
-      }
-    };
-    initCategories();
-  }, []);
-
-
-  const handleCategoryAdded = (newCategory) => {
-    setCategories(currentCategories => [...currentCategories, newCategory]);
-  };
-
-  const startEditingCategory = (category) => {
-    console.log('Start editing category');
-    setCategoryToEdit(category);
-    setIsEditingCategory(true);
-  };
-
-  const onCategoriesChanged = async () => {
-    try {
-      const categoriesData = await fetchCategories();
-      setCategories(categoriesData);
-    } catch (error) {
-      console.error('Error refreshing categories:', error);
-    }
-  };
+  // Category logic removed as requested
 
   useEffect(() => {
     const init = async () => {
@@ -70,23 +37,32 @@ export default function RecipesApp({ onLogout }) {
 
   const refreshRecipes = async (categoryId = 'All') => {
     const jwtToken = localStorage.getItem('jwt');
-    const updatedRecipes = await fetchRecipes(jwtToken, categoryId); 
+    const updatedRecipes = await fetchRecipes(jwtToken, categoryId);
     setRecipes(updatedRecipes);
   };
 
   const handleCategoryFilterChange = (categoryId) => {
     // Call the function to refresh recipes with the selected category ID
     refreshRecipes(categoryId);
-  };  
+  };
 
   const handleSearchChange = (newSearchTerm) => {
     setSearchTerm(newSearchTerm.toLowerCase());
   };
 
-  const filteredRecipes = recipes.filter(recipe =>
-  (recipe.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    recipe.description?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredRecipes = recipes.filter(recipe => {
+    const term = searchTerm.toLowerCase();
+    // Check title
+    if (recipe.title?.toLowerCase().includes(term)) return true;
+    // Check description (if any)
+    if (recipe.description?.toLowerCase().includes(term)) return true;
+    // Check ingredients (string)
+    if (recipe.ingredients?.toLowerCase().includes(term)) return true;
+    // Check category name (if populated by backend join)
+    if (recipe.categoryName?.toLowerCase().includes(term)) return true;
+
+    return false;
+  });
 
   const toggleSortOrder = () => {
     setIsSortedAsc(!isSortedAsc);
@@ -112,23 +88,28 @@ export default function RecipesApp({ onLogout }) {
 
   return (
     <>
-      <div>
-        <Header />
-        {/* <TopBar setShowAddForm={setShowAddForm} onSearchChange={handleSearchChange} onCategoryAdded={handleCategoryAdded} onLogout={onLogout} />
-        {showAddForm && !editingRecipe && <AddRecipeForm setShowAddForm={setShowAddForm} fetchRecipes={fetchRecipes} onRecipesUpdated={refreshRecipes} />}
-        {showUpdateForm && editingRecipe && <UpdateRecipeForm setShowUpdateForm={setShowUpdateForm} fetchRecipes={fetchRecipes} editingRecipe={editingRecipe} setEditingRecipe={setEditingRecipe} onRecipesUpdated={refreshRecipes} />} */}
-      </div>
-      <div className="categories-display container mb-4" style={{ marginLeft: '20%', marginTop: '50px' }}>
-        <CategoriesDisplay categories={categories} onCategoriesChanged={onCategoriesChanged} startEditingCategory={startEditingCategory} isEditingCategory={isEditingCategory} handleCategoryFilterChange={handleCategoryFilterChange} />
-        {isEditingCategory && <EditCategoryForm category={categoryToEdit} onClose={() => setIsEditingCategory(false)} onCategoriesChanged={onCategoriesChanged} />}
-      </div>
-      <div style={{ marginLeft: '20%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={toggleSortOrder} className="btn btn-primary mb-3">&#8645;</button>
-        <RecipeCounter  recipeCount={displayedRecipeCount} />
-      </div>
-      <div className="recipes-grid">
-        <Recipes recipes={sortedFilteredRecipes} onDelete={deleteRecipe} setEditingRecipe={setEditingRecipe} setShowUpdateForm={setShowUpdateForm} />
-      </div>
+
+
+      {activeTab === 'recipes' && (
+        <>
+          <div className="container mt-1">
+            <TopBar onSearchChange={handleSearchChange} />
+            {showAddForm && !editingRecipe && <AddRecipeForm setShowAddForm={setShowAddForm} fetchRecipes={refreshRecipes} onRecipesUpdated={refreshRecipes} />}
+            {showUpdateForm && editingRecipe && <UpdateRecipeForm setShowUpdateForm={setShowUpdateForm} fetchRecipes={refreshRecipes} editingRecipe={editingRecipe} setEditingRecipe={setEditingRecipe} onRecipesUpdated={refreshRecipes} />}
+          </div>
+
+          <div className="container d-flex flex-row justify-content-between align-items-center mb-3 mt-4">
+            <button onClick={toggleSortOrder} className="btn btn-primary">&#8645; Sort</button>
+            <RecipeCounter recipeCount={displayedRecipeCount} />
+          </div>
+          <div className="recipes-grid">
+            <Recipes recipes={sortedFilteredRecipes} onDelete={deleteRecipe} setEditingRecipe={setEditingRecipe} setShowUpdateForm={setShowUpdateForm} />
+          </div>
+        </>
+      )}
+
+      {activeTab === 'menus' && <MenuPlanner />}
+      {activeTab === 'shopping' && <ShoppingList />}
     </>
   );
 }

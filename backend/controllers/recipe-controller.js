@@ -1,17 +1,17 @@
-import mysql from 'mysql2/promise';
 import multer from 'multer';
-import { app, upload } from '../app.js';
+import { app } from '../app.js';
+import { upload } from '../config/multer.js';
 import 'dotenv/config';
 
 export class RecipeController {
   constructor(recipeService) {
     this.recipeService = recipeService;
   }
-  
+
   async listAll(req, res) {
     try {
       const recipes = await this.recipeService.getAllRecipes(
-        req.userId, 
+        req.userId,
         req.query.category
       );
       res.json(recipes);
@@ -19,7 +19,7 @@ export class RecipeController {
       this.handleError(res, error, 'Error fetching recipes');
     }
   }
-  
+
 
   async create(req, res) {
     try {
@@ -27,12 +27,12 @@ export class RecipeController {
         ...req.body,
         image: req.file ? `/assets/${req.file.filename}` : null
       };
-      
+
       const createdRecipe = await this.recipeService.createRecipe(
-        recipeData, 
+        recipeData,
         req.userId
       );
-      
+
       res.status(201).json({
         status: 'success',
         data: createdRecipe
@@ -48,12 +48,12 @@ export class RecipeController {
         ...req.body,
         image: req.file ? `/assets/${req.file.filename}` : undefined
       };
-      
+
       await this.recipeService.updateRecipe(
-        req.params.id, 
+        req.params.id,
         recipeData
       );
-      
+
       res.json({ success: true });
     } catch (error) {
       this.handleError(res, error, 'Error updating recipe');

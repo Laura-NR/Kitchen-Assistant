@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { loginUser } from "../API/user-manager";
 
 export default function Authenticate({
   onAuthenticatedChanged,
   switchToRegister,
+  loginMessage,
+  loginMessageType
 }) {
+  const [error, setError] = useState('');
+
   async function onLoginFormSubmitHAndler(e) {
     e.preventDefault();
+    setError('');
     const formData = new FormData(e.target);
 
     const payload = {
@@ -19,7 +24,7 @@ export default function Authenticate({
       localStorage.setItem("jwt", jwt); // Store the token
       onAuthenticatedChanged(true, jwt);
     } catch (error) {
-      alert(error.message);
+      setError(error.message || "Error logging in");
     }
   }
 
@@ -39,6 +44,12 @@ export default function Authenticate({
       >
         <fieldset className="w-75 m-auto d-flex flex-column justify-content-center align-items-center">
           <legend className="text-primary">Authentication</legend>
+          {loginMessage && loginMessageType === 'success' && (
+            <div className="alert alert-success w-100 p-2 text-center" role="alert">
+              {loginMessage}
+            </div>
+          )}
+          {error && <div className="alert alert-danger w-100 p-2 text-center" role="alert">{error}</div>}
           <div className="mb-3 w-100">
             <label htmlFor="username" className="form-label">
               Username
